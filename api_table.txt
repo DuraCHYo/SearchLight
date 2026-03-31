@@ -1,0 +1,10 @@
+API (Client Namespace),Основные методы,Описание и назначение
+indices,"create, delete, exists, put_mapping, get_settings","Управление структурами. Создание индексов, настройка полей (mapping) и параметров (анализаторы, шарды)."
+cluster,"health, state, stats, put_settings","Здоровье системы. Проверка статуса (green/yellow/red), просмотр настроек всего кластера."
+nodes,"stats, info, usage","Железо. Статистика по конкретным серверам: загрузка CPU, использование RAM и диска."
+cat,"indices, shards, nodes, health","Для человека. Возвращает данные в виде компактных текстовых таблиц (в консоли читать удобнее, чем JSON)."
+security,"create_user, put_role, get_authcfgs","Безопасность. Управление пользователями, ролями и правами доступа (если плагин включен)."
+snapshot,"create, restore, create_repository",Резервное копирование. Создание снимков данных и их восстановление.
+tasks,"list, get, cancel","Фоновые процессы. Просмотр долгоживущих задач (например, затянувшийся reindex)."
+ingest,"put_pipeline, simulate, get_pipeline",ETL на лету. Создание цепочек обработки данных перед их сохранением в индекс.
+plugins.index_management,"put_policy, add_policy, explain",Автоматизация (ISM). Управление жизненным циклом индексов (ваша текущая задача).

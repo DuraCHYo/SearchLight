@@ -5,11 +5,6 @@ from client import create_os_client
 def get_client(ctx: typer.Context):
     cfg = ctx.obj
 
-    # if not cfg["auth"]:
-    #     raise typer.BadParameter(
-    #         "Missing --auth (or OS_AUTH env var). Format: user:password"
-    #     )
-
     return create_os_client(
         host=cfg["host"],
         port=cfg["port"],

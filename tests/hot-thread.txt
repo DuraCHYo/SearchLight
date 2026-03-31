@@ -1,0 +1,9 @@
+::: {63866fc4a429}{syjjdpu8SX6Bzxh7vxwy1Q}{TN9MwW0tQE2rnkBI41HilQ}{172.17.0.2}{172.17.0.2:9300}{dimr}{shard_indexing_pressure_enabled=true}
+   Hot threads at 2026-03-31T20:03:26.608Z, interval=500ms, busiestThreads=3, ignoreIdleThreads=true:
+   
+    0.5% (2.4ms out of 500ms) cpu usage by thread 'opensearch[63866fc4a429][generic][T#4]'
+     2/10 snapshots sharing following 3 elements
+       java.base@25.0.2/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:614)
+       java.base@25.0.2/java.lang.Thread.runWith(Thread.java:1487)
+       java.base@25.0.2/java.lang.Thread.run(Thread.java:1474)
+
