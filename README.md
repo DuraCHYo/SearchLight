@@ -3,6 +3,7 @@
 This README also available in [Русском](README-RU.md)
 
 SearchLight is a command-line interface (CLI) tool designed for managing and interacting with OpenSearch clusters. It provides a structured and extensible way to perform administrative and operational tasks such as security management, index policies handling, cluster monitoring, and more.
+Planned as OpenSearch-SwissKnife in OpenSearch APIs world.
 
 The project is built using `typer` for CLI handling and leverages the official `opensearch-py` client.
 
