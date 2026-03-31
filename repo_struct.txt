@@ -1,0 +1,30 @@
+searchlight/
+├── bin/                        # Исполняемые файлы (скрипты запуска)
+│   └── searchlight             # Главный entry point (если не через pip)
+├── searchlight/                # Основной пакет исходного кода
+│   ├── __init__.py
+│   ├── cli.py                  # Обработка аргументов командной строки (Click или Argparse)
+│   ├── client.py               # Обертка над OpenSearch API (инициализация связи)
+│   ├── core/                   # Ядро логики
+│   │   ├── __init__.py
+│   │   ├── backup.py           # Логика создания бэкапов
+│   │   ├── restore.py          # Логика восстановления
+│   │   └── exporter.py         # Логика выгрузки настроек (JSON/YAML)
+│   ├── providers/              # Модули для разных типов данных
+│   │   ├── __init__.py
+│   │   ├── policies.py         # Работа с ISM (Index State Management)
+│   │   ├── roles.py            # Работа с Security Role Mapping
+│   │   ├── templates.py        # Индексные шаблоны
+│   │   └── monitors.py         # Настройки алертинга
+│   └── utils/                  # Вспомогательные функции
+│       ├── __init__.py
+│       ├── logger.py           # Настройка логов
+│       └── formatters.py       # Преобразование данных в нужный формат
+├── tests/                      # Модульные и интеграционные тесты
+│   ├── test_backup.py
+│   └── test_providers.py
+├── examples/                   # Примеры конфигурационных файлов
+│   └── config.yaml.example
+├── README.md                   # Документация
+├── requirements.txt            # Зависимости (opensearch-py, pyyaml и т.д.)
+└── setup.py                    # Скрипт установки

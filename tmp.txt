@@ -1,0 +1,46 @@
+Запустить код: poetry run python searchlight/main.py --host localhost --port 9200 --auth 'admin:myStrongPassword123!' --disable-verify-ssl security list-users
+
+По умолчанию Poetry создает виртуальные окружения в общей системной папке (отдельно от папки проекта).
+
+На macOS/Linux: ~/Library/Caches/pypoetry/virtualenvs
+
+На Windows: C:\Users\<User>\AppData\Local\pypoetry\Cache\virtualenvs
+
+Совет: Если вы хотите, чтобы папка .venv создавалась прямо в папке проекта (как в PyCharm или venv), выполните команду:
+poetry config virtualenvs.in-project true
+
+📝 Памятка по Poetry (сохрани себе)
+1. Начало работы
+poetry init — превратить существующий проект в Poetry-проект (создаст pyproject.toml).
+
+poetry new my-project — создать новый проект с нуля в новой папке.
+
+poetry install — установить все зависимости из pyproject.toml (создаст окружение).
+
+2. Управление библиотеками
+poetry add <package> — установить библиотеку и добавить в зависимости.
+
+poetry add <package> --group dev — добавить библиотеку только для разработки (тесты, линтеры).
+
+poetry remove <package> — удалить библиотеку.
+
+poetry update — обновить все библиотеки до последних разрешенных версий.
+
+3. Запуск кода
+poetry run python script.py — запустить скрипт внутри окружения.
+
+poetry shell — "войти" внутрь виртуального окружения (exit, чтобы выйти).
+
+4. Инфо и настройки
+poetry env info — показать путь к текущему виртуальному окружению.
+
+poetry env list — список всех окружений проекта.
+
+poetry env remove --all — удалить окружение, если оно "сломалось" и нужно пересоздать.
+
+poetry check — проверить pyproject.toml на ошибки.
+
+5. Сборка и публикация
+poetry build — собрать проект в .whl и tar.gz (появятся в папке dist/).
+
+poetry publish — отправить ваш пакет в PyPI.
