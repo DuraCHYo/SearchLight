@@ -1,4 +1,9 @@
 from rich.theme import Theme
+from rich.style import Style
+
+
+def danger():
+    return Style(color="red", blink=True, bold=True)
 
 
 def custom_theme():
@@ -14,7 +19,7 @@ def get_threshold_style(val, threshold=15):
     try:
         v = int(val)
         if v > threshold:
-            return "red on white"
+            return "white on red"
         if v > 0:
             return "yellow"
         return "green"
