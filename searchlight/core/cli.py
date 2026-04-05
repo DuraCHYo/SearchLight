@@ -8,7 +8,7 @@ from services.nodes import NodeService
 from services.cat import CatService
 from utils.get_client import get_client
 from utils.logger import handle_errors
-from utils.custom_themes import custom_theme
+from utils.custom_themes import custom_theme, get_status_style, get_threshold_style
 from rich.console import Console
 from rich.table import Table
 from rich import print_json
@@ -481,33 +481,20 @@ def cat_get_fielddata(
 @user_friendly_cat_app.command("health")
 @handle_errors
 def cat_get_health(ctx: typer.Context):
-    """EZ Cat. Get Cluster Health"""
+    """EZ Cat. Get Cluster Health
+
+    Args:
+        ctx (typer.Context): _description_
+    """
     client = get_client(ctx)
     services = CatService(client)
 
-    # Парсинг данных
     data = services.cat_health().strip().split("\n")
     if len(data) < 2:
-        return  # Или обработка ошибки
+        return
 
     headers, values = data[0].split(), data[1].split()
     stats = dict(zip(headers, values))
-
-    # 1. Логика определения цветов
-    def get_status_style(val):
-        styles = {"green": "green", "yellow": "yellow"}
-        return styles.get(val, "white on red")
-
-    def get_threshold_style(val, threshold=15):
-        try:
-            v = int(val)
-            if v > threshold:
-                return "red on white"
-            if v > 0:
-                return "yellow"
-            return "green"
-        except ValueError, TypeError:
-            return "white"
 
     column_config = [
         ("Cluster", "cluster", "white"),
