@@ -3,11 +3,11 @@ class TasksService:
         self.client = client
         self.task_id = task_id
 
-    def get_task_info(self, task_id):
-        return self.client.tasks.get(task_id=task_id)
+    def get_task_info(self):
+        return self.client.tasks.get(task_id=self.task_id)
 
     def get_tasks_list(self):
         return self.client.tasks.list()
 
-    def cancel_task(self, task_id):
-        return self.client.tasks.cancel(task_id=task_id)
+    def cancel_task(self):
+        return self.client.tasks.cancel(task_id=self.task_id)

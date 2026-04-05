@@ -44,3 +44,6 @@ poetry check — проверить pyproject.toml на ошибки.
 poetry build — собрать проект в .whl и tar.gz (появятся в папке dist/).
 
 poetry publish — отправить ваш пакет в PyPI.
+
+Таблица цветов typer
+https://rich.readthedocs.io/en/stable/appendix/colors.html#appendix-colors

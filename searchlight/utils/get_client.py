@@ -1,5 +1,5 @@
 import typer
-from client import create_os_client
+from core.auth import create_os_client
 
 
 def get_client(ctx: typer.Context):
