@@ -1,5 +1,5 @@
-from rich.theme import Theme
 from rich.style import Style
+from rich.theme import Theme
 
 
 def danger():

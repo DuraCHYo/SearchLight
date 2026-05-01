@@ -1,12 +1,14 @@
 import typer
-from rich.console import Console
+
 from searchlight.core.cli import (
-    security_app,
-    policies_app,
-    tasks_app,
-    nodes_app,
-    user_friendly_cat_app,
     main as common_callback,
+)
+from searchlight.core.cli import (
+    nodes_app,
+    policies_app,
+    security_app,
+    tasks_app,
+    user_friendly_cat_app,
 )
 
 app = typer.Typer()

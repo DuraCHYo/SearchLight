@@ -1,5 +1,6 @@
 from functools import wraps
-from typer import secho, Exit
+
+from typer import Exit, secho
 
 
 def handle_errors(f):

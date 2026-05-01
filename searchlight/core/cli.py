@@ -1,17 +1,21 @@
+from typing import Annotated, Optional
+
 import typer
-from typing import Optional, Annotated
 import urllib3
-from services.security import SecurityService
-from services.ism_policies import PoliciesService
-from services.tasks import TasksService
-from services.nodes import NodeService
-from services.cat import CatService
-from utils.get_client import get_client
-from utils.logger import handle_errors
-from utils.custom_themes import custom_theme, get_status_style, get_threshold_style
+from rich import print_json
 from rich.console import Console
 from rich.table import Table
-from rich import print_json
+from services.cat import CatService  # ty:ignore[unresolved-import]
+from services.ism_policies import PoliciesService  # ty:ignore[unresolved-import]
+from services.nodes import NodeService  # ty:ignore[unresolved-import]
+from services.security import SecurityService  # ty:ignore[unresolved-import]
+from services.tasks import TasksService  # ty:ignore[unresolved-import]
+from utils.custom_themes import (  # ty:ignore[unresolved-import]
+    get_status_style,
+    get_threshold_style,
+)
+from utils.get_client import get_client  # ty:ignore[unresolved-import]
+from utils.logger import handle_errors  # ty:ignore[unresolved-import]
 
 console = Console(color_system="auto", force_terminal=True)
 app = typer.Typer()
@@ -181,7 +185,7 @@ def tasks_get_task_info(
         ctx (typer.Context): _description_
     """
     client = get_client(ctx)
-    services = TasksService(client, task_id)
+    services = TasksService(client, task_id=task_id)
     data = services.get_task_info()
     print_json(data=data)
 
@@ -199,7 +203,7 @@ def tasks_cancel_task(
         task_id (str, optional): _description_. Defaults to typer.Argument(None, help="Task ID").
     """
     client = get_client(ctx)
-    services = TasksService(client, task_id)
+    services = TasksService(client, task_id=task_id)
     data = services.cancel_task()
     print_json(data=data)
 
@@ -272,7 +276,7 @@ def nodes_get_hot_threads(
         doc_type (Optional[str], optional): _description_. Defaults to typer.Option( None, "--doc_type", "-dt", help="The type to sample. Valid choices are {block, cpu, wait}", ).
     """
     client = get_client(ctx)
-    services = NodeService(client, node_id, doc_type)
+    services = NodeService(client, node_id=node_id, doc_type=doc_type)
     filtered_lines = []
     found_start = False
     data = services.get_hot_threads()
@@ -309,7 +313,7 @@ def nodes_get_node_info(
         metric (Optional[str], optional): _description_. Defaults to typer.Option( "_all", "--metric", "-m", help="Node metrics (settings, os, http, jvm, process, thread_pool, transport, plugins, ingest). Supports a comma-separated list", ).
     """
     client = get_client(ctx)
-    services = NodeService(client, node_id, metric)
+    services = NodeService(client, node_id=node_id, metric=metric)
 
     data = services.get_node_info()
 
@@ -337,7 +341,7 @@ def nodes_get_node_stats(
 
     """
     client = get_client(ctx)
-    services = NodeService(client, node_id, metric)
+    services = NodeService(client, node_id=node_id, metric=metric)
 
     data = services.get_node_stats()
 
@@ -365,7 +369,7 @@ def nodes_get_node_usage(
 
     """
     client = get_client(ctx)
-    services = NodeService(client, node_id, metric)
+    services = NodeService(client, node_id=node_id, metric=metric)
 
     data = services.get_node_usage()
 
@@ -392,7 +396,7 @@ def cat_get_alias(
         ctx (typer.Context): _description_
     """
     client = get_client(ctx)
-    services = CatService(client, name, verbose)
+    services = CatService(client, name=name, verbose=verbose)
     data = services.cat_alias()
     console.print(data)
 
@@ -417,7 +421,7 @@ def cat_get_allocation(
         ctx (typer.Context): _description_
     """
     client = get_client(ctx)
-    services = CatService(client, node_id, verbose)
+    services = CatService(client, node_id=node_id, verbose=verbose)
     data = services.cat_allocation()
     console.print(data)
 
@@ -445,7 +449,7 @@ def cat_get_count(
         ctx (typer.Context): _description_
     """
     client = get_client(ctx)
-    services = CatService(client, index, verbose)
+    services = CatService(client, index=index, verbose=verbose)
     data = services.cat_count()
     console.print(data)
 
@@ -454,7 +458,7 @@ def cat_get_count(
 @handle_errors
 def cat_get_fielddata(
     ctx: typer.Context,
-    index: Annotated[
+    fields: Annotated[
         str | None,
         typer.Argument(
             help="Field name. Supports a comma-separated list", show_default="All"
@@ -473,7 +477,7 @@ def cat_get_fielddata(
         ctx (typer.Context): _description_
     """
     client = get_client(ctx)
-    services = CatService(client, index, verbose)
+    services = CatService(client, fields=fields, verbose=verbose)
     data = services.cat_fielddata()
     console.print(data)
 
@@ -520,6 +524,217 @@ def cat_get_health(ctx: typer.Context):
 
     table.add_row(*row_values)
     console.print(table)
+
+
+@user_friendly_cat_app.command("indices")
+@handle_errors
+def cat_get_indices(
+    ctx: typer.Context,
+    index: Annotated[
+        str | None,
+        typer.Argument(
+            help="Index name. Supports a comma-separated list.", show_default="All"
+        ),
+    ] = None,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT indices operation lists information related to indexes, that is, how much disk space they are using, how many shards they have, health status, etc.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, index=index, verbose=verbose)
+    data = services.cat_indices()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("cluster-manager")
+@handle_errors
+def cat_get_cluster_manager(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT cluster manager operation lists information that helps identify the elected cluster manager node.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_cluster_manager()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("nodeattrs")
+@handle_errors
+def cat_get_nodeattrs(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT nodeattrs operation lists the attributes of custom nodes.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_nodeattrs()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("nodes")
+@handle_errors
+def cat_get_nodes(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT nodes operation lists node-level information, including node roles and load metrics.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_nodes()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("pending-tasks")
+@handle_errors
+def cat_get_pending_tasks(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT pending tasks operation lists the progress of all pending tasks, including task priority and time in queue.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_pending_tasks()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("pit-segments")
+@handle_errors
+def cat_get_pit_segments(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT Point in Time (PIT) segments operation provides low-level information about the disk utilization
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_pit_segments()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("plugins")
+@handle_errors
+def cat_get_plugins(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT plugins operation lists the names, components, and versions of the installed plugins.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_plugins()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("recovery")
+@handle_errors
+def cat_get_recovery(
+    ctx: typer.Context,
+    index: Annotated[
+        str | None,
+        typer.Argument(
+            help="Index name. Supports a comma-separated list.", show_default="All"
+        ),
+    ] = None,
+    verbose: Annotated[
+        bool, typer.Option("--verbose", "-v", help="Enable verbose")
+    ] = False,
+    is_active: Annotated[
+        bool,
+        typer.Option("--all", "-a", help="Show all operation list including finished"),
+    ] = False,
+):
+    """EZ Cat. The CAT recovery operation lists all completed and ongoing index and shard recoveries.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose, is_active=is_active, index=index)
+    data = services.cat_recovery()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("repositories")
+@handle_errors
+def cat_get_repositories(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose",
+    ),
+):
+    """EZ Cat. The CAT repositories operation lists all snapshot repositories for a cluster.
+
+    Args:
+        ctx (typer.Context): _description_
+    """
+    client = get_client(ctx)
+    services = CatService(client, verbose=verbose)
+    data = services.cat_repositories()
+    console.print(data)
 
 
 if __name__ == "__main__":
