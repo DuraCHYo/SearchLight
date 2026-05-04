@@ -1,37 +1,45 @@
-# ⚡️ Шпаргалка по uv (вместо Poetry)
+# ⚡️ uv Cheat Sheet
 
-### 🚀 Запуск кода
-Вместо `poetry run` используйте `uv run`:
+### 🚀 Running Code
+Instead of `poetry run`, use `uv run`:
 ```bash
-uv run searchlight/main.py --host localhost --port 9200 --auth 'admin:myStrongPassword123!' --disable-verify-ssl security list-users
+uv run sl --host localhost --port 9200 --auth 'admin:myStrongPassword123!' --disable-verify-ssl --disable-warn security list-users
 ```
 
 ---
 
-### 📂 Виртуальные окружения
-**uv** по умолчанию создает папку `.venv` прямо в корне проекта.
+### 📂 Virtual Environments
+**uv** creates a `.venv` directory in your project root by default.
 
-*   **Локация:** `./.venv`
-*   **Автоматизация:** `uv` сам создаст окружение при первой команде `uv run` или `uv sync`.
+*   **Location:** `./.venv`
+*   **Automation:** `uv` automatically creates/updates the environment on `uv run` or `uv sync`.
+*   **No activation needed:** `uv run` handles the environment path for you.
 
 ---
 
-### 📝 Основные команды
+### 📝 Core Commands
 
-#### 1. Начало работы
-*   `uv init` — создать новый проект (аналог `poetry init/new`).
-*   `uv sync` — установить все зависимости и создать `.venv` (аналог `poetry install`).
+#### 1. Project Setup
+*   `uv init` — Initialize a new project (replaces `poetry init`).
+*   `uv sync` — Install dependencies and sync `.venv` (replaces `poetry install`).
 
-#### 2. Управление библиотеками
-*   `uv add <package>` — добавить библиотеку.
-*   `uv add --dev <package>` — добавить библиотеку для разработки.
-*   `uv remove <package>` — удалить библиотеку.
-*   `uv lock --upgrade` — обновить зависимости (аналог `poetry update`).
+#### 2. Managing Dependencies
+*   `uv add <package>` — Add a dependency.
+*   `uv add --dev <package>` — Add a dev dependency.
+*   `uv remove <package>` — Remove a package.
+*   `uv lock --upgrade` — Update all dependencies (replaces `poetry update`).
 
-#### 3. Запуск и работа
-*   `uv run <command>` — запустить скрипт внутри окружения.
-*   `uv tree` — дерево зависимостей.
-*   `uv python install 3.12` — установить нужную версию Python.
+#### 3. Python Management
+*   `uv python install 3.12` — Download and install a specific Python version.
+*   `uv python list` — Show available Python versions.
+*   `uv tree` — Display visual dependency tree.
 
-Таблица цветов typer
-https://rich.readthedocs.io/en/stable/appendix/colors.html#appendix-colors
+---
+
+#### ⚡️ Global Tools (pipx replacement)
+Install and run CLI tools without polluting your project:
+*   `uv tool install ruff` — Install a tool globally.
+*   `uvx <package>` — Run a tool in a temporary, isolated environment (e.g., `uvx cowsay "Hello"`).
+
+### 🎨 Color Reference for Typer/Rich
+[Rich Color Appendix](https://rich.readthedocs.io/en/stable/appendix/colors.html#appendix-colors)

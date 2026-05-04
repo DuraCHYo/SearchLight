@@ -8,6 +8,9 @@ class CatService:
         field_name=None,
         node_id=None,
         is_active=None,
+        shardId=None,
+        sortMethod="desc",
+        sortBy=None,
     ):
         self.client = client
         self.name = name
@@ -17,6 +20,9 @@ class CatService:
         self.node_id = node_id
         self.verbose_selector = str(self.verbose).lower()
         self.is_active = is_active
+        self.shardId = shardId
+        self.sortMethod = sortMethod
+        self.sortBy = sortBy
 
     def cat_alias(
         self,
@@ -111,12 +117,12 @@ class CatService:
     def cat_recovery(
         self,
     ):  # https://docs.opensearch.org/latest/api-reference/cat/cat-recovery/
-        active_recovery_tasks = "false" if self.is_active else "true"
+        active_only = "false" if self.is_active else "true"
         return self.client.cat.recovery(
             index=self.index,
             params={
                 "v": self.verbose_selector,
-                "active_only": active_recovery_tasks,
+                "active_only": active_only,
                 "detailed": self.verbose_selector,
             },
         )
@@ -127,5 +133,24 @@ class CatService:
         return self.client.cat.repositories(
             params={
                 "v": self.verbose_selector,
+            },
+        )
+
+    def cat_segment_replication(
+        self,
+    ):  # https://docs.opensearch.org/latest/api-reference/cat/cat-segment-replication/
+        active_only = "false" if self.is_active else "true"
+
+        return self.client.cat.segment_replication(
+            index=self.index,
+            params={
+                "v": self.verbose_selector,
+                "active_only": active_only,
+                **({"detailed": self.verbose_selector} if self.is_active else {}),
+                **(
+                    {"s": f"{self.sortBy}:{(self.sortMethod).lower()}"}
+                    if self.sortBy
+                    else {}
+                ),
             },
         )

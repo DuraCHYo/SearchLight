@@ -5,17 +5,22 @@ import urllib3
 from rich import print_json
 from rich.console import Console
 from rich.table import Table
-from services.cat import CatService  # ty:ignore[unresolved-import]
-from services.ism_policies import PoliciesService  # ty:ignore[unresolved-import]
-from services.nodes import NodeService  # ty:ignore[unresolved-import]
-from services.security import SecurityService  # ty:ignore[unresolved-import]
-from services.tasks import TasksService  # ty:ignore[unresolved-import]
-from utils.custom_themes import (  # ty:ignore[unresolved-import]
+
+from searchlight.services.cat import CatService
+from searchlight.services.ism_policies import (
+    PoliciesService,
+)
+from searchlight.services.nodes import NodeService
+from searchlight.services.security import (
+    SecurityService,
+)
+from searchlight.services.tasks import TasksService
+from searchlight.utils.custom_themes import (
     get_status_style,
     get_threshold_style,
 )
-from utils.get_client import get_client  # ty:ignore[unresolved-import]
-from utils.logger import handle_errors  # ty:ignore[unresolved-import]
+from searchlight.utils.get_client import get_client
+from searchlight.utils.logger import handle_errors
 
 console = Console(color_system="auto", force_terminal=True)
 app = typer.Typer()
@@ -51,10 +56,6 @@ def main(
     }
 
 
-def get_console(ctx: typer.Context) -> Console:
-    return ctx.obj["console"]
-
-
 @security_app.command("list-roles")
 @handle_errors
 def security_list_roles(ctx: typer.Context):
@@ -77,7 +78,6 @@ def security_list_users(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    console = get_console(ctx)
     client = get_client(ctx)
     services = SecurityService(client)
     data = services.get_users()
@@ -252,7 +252,6 @@ def tasks_get_tasks_list(ctx: typer.Context):
                 duration_ms,
             )
 
-    console = Console()
     console.print(table)
 
 
@@ -390,7 +389,7 @@ def cat_get_alias(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. List Index Aliases
+    """List Index Aliases
 
     Args:
         ctx (typer.Context): _description_
@@ -415,7 +414,7 @@ def cat_get_allocation(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. Get Index Allocations
+    """Get Index Allocations
 
     Args:
         ctx (typer.Context): _description_
@@ -443,7 +442,7 @@ def cat_get_count(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. Count documents
+    """Count documents
 
     Args:
         ctx (typer.Context): _description_
@@ -471,13 +470,13 @@ def cat_get_fielddata(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. Count size of field name
+    """Count size of field name
 
     Args:
         ctx (typer.Context): _description_
     """
     client = get_client(ctx)
-    services = CatService(client, fields=fields, verbose=verbose)
+    services = CatService(client, field_name=fields, verbose=verbose)
     data = services.cat_fielddata()
     console.print(data)
 
@@ -485,7 +484,7 @@ def cat_get_fielddata(
 @user_friendly_cat_app.command("health")
 @handle_errors
 def cat_get_health(ctx: typer.Context):
-    """EZ Cat. Get Cluster Health
+    """Get Cluster Health
 
     Args:
         ctx (typer.Context): _description_
@@ -543,7 +542,7 @@ def cat_get_indices(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT indices operation lists information related to indexes, that is, how much disk space they are using, how many shards they have, health status, etc.
+    """The CAT indices operation lists information related to indexes, that is, how much disk space they are using, how many shards they have, health status, etc.
 
     Args:
         ctx (typer.Context): _description_
@@ -565,7 +564,7 @@ def cat_get_cluster_manager(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT cluster manager operation lists information that helps identify the elected cluster manager node.
+    """The CAT cluster manager operation lists information that helps identify the elected cluster manager node.
 
     Args:
         ctx (typer.Context): _description_
@@ -587,7 +586,7 @@ def cat_get_nodeattrs(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT nodeattrs operation lists the attributes of custom nodes.
+    """The CAT nodeattrs operation lists the attributes of custom nodes.
 
     Args:
         ctx (typer.Context): _description_
@@ -609,7 +608,7 @@ def cat_get_nodes(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT nodes operation lists node-level information, including node roles and load metrics.
+    """The CAT nodes operation lists node-level information, including node roles and load metrics.
 
     Args:
         ctx (typer.Context): _description_
@@ -631,7 +630,7 @@ def cat_get_pending_tasks(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT pending tasks operation lists the progress of all pending tasks, including task priority and time in queue.
+    """The CAT pending tasks operation lists the progress of all pending tasks, including task priority and time in queue.
 
     Args:
         ctx (typer.Context): _description_
@@ -653,7 +652,7 @@ def cat_get_pit_segments(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT Point in Time (PIT) segments operation provides low-level information about the disk utilization
+    """The CAT Point in Time (PIT) segments operation provides low-level information about the disk utilization
 
     Args:
         ctx (typer.Context): _description_
@@ -675,7 +674,7 @@ def cat_get_plugins(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT plugins operation lists the names, components, and versions of the installed plugins.
+    """The CAT plugins operation lists the names, components, and versions of the installed plugins.
 
     Args:
         ctx (typer.Context): _description_
@@ -704,7 +703,7 @@ def cat_get_recovery(
         typer.Option("--all", "-a", help="Show all operation list including finished"),
     ] = False,
 ):
-    """EZ Cat. The CAT recovery operation lists all completed and ongoing index and shard recoveries.
+    """The CAT recovery operation lists all completed and ongoing index and shard recoveries.
 
     Args:
         ctx (typer.Context): _description_
@@ -726,7 +725,7 @@ def cat_get_repositories(
         help="Enable verbose",
     ),
 ):
-    """EZ Cat. The CAT repositories operation lists all snapshot repositories for a cluster.
+    """The CAT repositories operation lists all snapshot repositories for a cluster.
 
     Args:
         ctx (typer.Context): _description_
@@ -734,6 +733,64 @@ def cat_get_repositories(
     client = get_client(ctx)
     services = CatService(client, verbose=verbose)
     data = services.cat_repositories()
+    console.print(data)
+
+
+@user_friendly_cat_app.command("segment_replication")
+@handle_errors
+def cat_get_segment_replication(
+    ctx: typer.Context,
+    verbose: Annotated[
+        bool,
+        typer.Option("--verbose", "-v", help="Enable verbose", show_default="False"),
+    ] = False,
+    is_active: Annotated[
+        bool,
+        typer.Option(
+            "--all",
+            "-a",
+            help="Show all operation list including finished",
+            rich_help_panel="Filters",
+            show_default="False",
+        ),
+    ] = False,
+    sortBy: Annotated[
+        str,
+        typer.Option(
+            "--sort",
+            "-s",
+            help="Sort segments by field_name",
+            rich_help_panel="Sorting",
+            show_default="Without sort",
+        ),
+    ] = "",
+    sortMethod: Annotated[
+        str,
+        typer.Option(
+            "--sortmethod",
+            "-sm",
+            help="Order by DESC (2->1) or ASC (1->2)",
+            rich_help_panel="Sorting",
+        ),
+    ] = "desc",
+):
+    """The CAT segment replication operation returns information about active and last completed segment replication events on each replica shard, including related shard-level metrics. These metrics provide information about how far behind the primary shard the replicas are lagging.
+
+    Args:
+        verbose (Annotated[ bool, typer.Option, optional): _description_. Defaults to "Enable verbose") ]=False.
+        is_active (Annotated[ bool, typer.Option, optional): _description_. Defaults to "Show all operation list including finished"), ]=False.
+        sortBy (Annotated[ str, typer.Option, optional): _description_. Defaults to "Sort segments by field_name"), ]="".
+        sortMethod (Annotated[ str, typer.Option, optional): _description_. Defaults to "Order by DESC or ASC"), ]="desc".
+    """
+    client = get_client(ctx)
+    services = CatService(
+        client,
+        verbose=verbose,
+        is_active=is_active,
+        sortBy=sortBy,
+        sortMethod=sortMethod,
+    )
+    data = services.cat_segment_replication()
     console.print(data)
 
 
