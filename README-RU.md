@@ -53,16 +53,10 @@ git clone https://github.com/DuraCHYo/SearchLight.git
 cd SearchLight
 ```
 
-Установка зависимостей через Poetry:
+Установка зависимостей через [UV](https://docs.astral.sh/uv/getting-started/installation/):
 
 ```bash
-poetry install
-```
-
-Альтернативно через pip:
-
-```bash
-pip install .
+uv sync
 ```
 
 ## Конфигурация
