@@ -37,7 +37,7 @@ def main(
     ctx: typer.Context,
     host: str = typer.Option("localhost", envvar="OS_HOST"),
     port: int = typer.Option(9200, envvar="OS_PORT"),
-    auth: str = typer.Option(None, envvar="OS_AUTH"),
+    auth: str = typer.Option(None, envvar="OS_AUTH", help="Format: login:password"),
     verify_ssl: bool = typer.Option(True, "--verify-ssl/--disable-verify-ssl"),
     use_ssl: bool = typer.Option(True, "--use-ssl/--disable-use-ssl"),
     ssl_show_warn: bool = typer.Option(True, "--show-warn/--disable-warn"),
@@ -64,8 +64,7 @@ def security_list_roles(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = SecurityService(client)
+    services = SecurityService(get_client(ctx))
     data = services.get_roles()
     print_json(data=data)
 
@@ -78,8 +77,7 @@ def security_list_users(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = SecurityService(client)
+    services = SecurityService(get_client(ctx))
     data = services.get_users()
 
     table = Table(title="OpenSearch Users")
@@ -103,8 +101,7 @@ def security_plugin_health(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = SecurityService(client)
+    services = SecurityService(get_client(ctx))
     data = services.get_health()
     print_json(data=data)
 
@@ -117,8 +114,7 @@ def security_who_am_i(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = SecurityService(client)
+    services = SecurityService(get_client(ctx))
     data = services.who_am_i()
     print_json(data=data)
 
@@ -137,8 +133,7 @@ def policies_list_policies(
         ctx (typer.Context): _description_
         policy_id (Annotated[ str  |  None, typer.Argument, optional): _description_. Defaults to "Policy name (optional)") ]=None.
     """
-    client = get_client(ctx)
-    services = PoliciesService(client)
+    services = PoliciesService(get_client(ctx))
     data = services.get_policy()
     print_json(data=data)
 
@@ -159,8 +154,7 @@ def policies_ensure_policy(
         policy_id (str, optional): _description_. Defaults to typer.Argument(..., help="Policy ID").
         file (typer.FileText, optional): _description_. Defaults to typer.Option( ..., "--file", "-f", help="Path to JSON-policy file" ).
     """
-    client = get_client(ctx)
-    services = PoliciesService(client)
+    services = PoliciesService(get_client(ctx))
 
     _, created = services.ensure_policy_exists()
 
@@ -184,8 +178,7 @@ def tasks_get_task_info(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = TasksService(client, task_id=task_id)
+    services = TasksService(get_client(ctx), task_id=task_id)
     data = services.get_task_info()
     print_json(data=data)
 
@@ -202,8 +195,7 @@ def tasks_cancel_task(
         ctx (typer.Context): _description_
         task_id (str, optional): _description_. Defaults to typer.Argument(None, help="Task ID").
     """
-    client = get_client(ctx)
-    services = TasksService(client, task_id=task_id)
+    services = TasksService(get_client(ctx), task_id=task_id)
     data = services.cancel_task()
     print_json(data=data)
 
@@ -216,8 +208,7 @@ def tasks_get_tasks_list(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = TasksService(client)
+    services = TasksService(get_client(ctx))
     data = services.get_tasks_list()
 
     table = Table(title="Running Tasks")
@@ -274,8 +265,7 @@ def nodes_get_hot_threads(
         node_id (Optional[str], optional): _description_. Defaults to typer.Argument(None, help="Node ID").
         doc_type (Optional[str], optional): _description_. Defaults to typer.Option( None, "--doc_type", "-dt", help="The type to sample. Valid choices are {block, cpu, wait}", ).
     """
-    client = get_client(ctx)
-    services = NodeService(client, node_id=node_id, doc_type=doc_type)
+    services = NodeService(get_client(ctx), node_id=node_id, doc_type=doc_type)
     filtered_lines = []
     found_start = False
     data = services.get_hot_threads()
@@ -311,11 +301,8 @@ def nodes_get_node_info(
         node_id (Optional[str], optional): _description_. Defaults to typer.Argument(None, help="Node ID").
         metric (Optional[str], optional): _description_. Defaults to typer.Option( "_all", "--metric", "-m", help="Node metrics (settings, os, http, jvm, process, thread_pool, transport, plugins, ingest). Supports a comma-separated list", ).
     """
-    client = get_client(ctx)
-    services = NodeService(client, node_id=node_id, metric=metric)
-
+    services = NodeService(get_client(ctx), node_id=node_id, metric=metric)
     data = services.get_node_info()
-
     print_json(data=data)
 
 
@@ -339,11 +326,8 @@ def nodes_get_node_stats(
         metric (Optional[str], optional): _description_. Defaults to typer.Option( "_all", "--metric", "-m", help="Node metrics (settings, os, http, jvm, process, thread_pool, transport, plugins, ingest). Supports a comma-separated list", ).
 
     """
-    client = get_client(ctx)
-    services = NodeService(client, node_id=node_id, metric=metric)
-
+    services = NodeService(get_client(ctx), node_id=node_id, metric=metric)
     data = services.get_node_stats()
-
     print_json(data=data)
 
 
@@ -367,11 +351,8 @@ def nodes_get_node_usage(
         metric (Optional[str], optional): _description_. Defaults to typer.Option( "_all", "--metric", "-m", help="Node metrics (settings, os, http, jvm, process, thread_pool, transport, plugins, ingest). Supports a comma-separated list", ).
 
     """
-    client = get_client(ctx)
-    services = NodeService(client, node_id=node_id, metric=metric)
-
+    services = NodeService(get_client(ctx), node_id=node_id, metric=metric)
     data = services.get_node_usage()
-
     print_json(data=data)
 
 
@@ -394,8 +375,7 @@ def cat_get_alias(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, name=name, verbose=verbose)
+    services = CatService(get_client(ctx), name=name, verbose=verbose)
     data = services.cat_alias()
     console.print(data)
 
@@ -419,8 +399,7 @@ def cat_get_allocation(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, node_id=node_id, verbose=verbose)
+    services = CatService(get_client(ctx), node_id=node_id, verbose=verbose)
     data = services.cat_allocation()
     console.print(data)
 
@@ -447,8 +426,7 @@ def cat_get_count(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, index=index, verbose=verbose)
+    services = CatService(get_client(ctx), index=index, verbose=verbose)
     data = services.cat_count()
     console.print(data)
 
@@ -475,8 +453,7 @@ def cat_get_fielddata(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, field_name=fields, verbose=verbose)
+    services = CatService(get_client(ctx), field_name=fields, verbose=verbose)
     data = services.cat_fielddata()
     console.print(data)
 
@@ -489,8 +466,7 @@ def cat_get_health(ctx: typer.Context):
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client)
+    services = CatService(get_client(ctx))
 
     data = services.cat_health().strip().split("\n")
     if len(data) < 2:
@@ -547,8 +523,7 @@ def cat_get_indices(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, index=index, verbose=verbose)
+    services = CatService(get_client(ctx), index=index, verbose=verbose)
     data = services.cat_indices()
     console.print(data)
 
@@ -569,8 +544,7 @@ def cat_get_cluster_manager(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_cluster_manager()
     console.print(data)
 
@@ -591,8 +565,7 @@ def cat_get_nodeattrs(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_nodeattrs()
     console.print(data)
 
@@ -613,8 +586,7 @@ def cat_get_nodes(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_nodes()
     console.print(data)
 
@@ -635,8 +607,7 @@ def cat_get_pending_tasks(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_pending_tasks()
     console.print(data)
 
@@ -657,8 +628,7 @@ def cat_get_pit_segments(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_pit_segments()
     console.print(data)
 
@@ -679,8 +649,7 @@ def cat_get_plugins(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_plugins()
     console.print(data)
 
@@ -708,8 +677,9 @@ def cat_get_recovery(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose, is_active=is_active, index=index)
+    services = CatService(
+        get_client(ctx), verbose=verbose, is_active=is_active, index=index
+    )
     data = services.cat_recovery()
     console.print(data)
 
@@ -730,8 +700,7 @@ def cat_get_repositories(
     Args:
         ctx (typer.Context): _description_
     """
-    client = get_client(ctx)
-    services = CatService(client, verbose=verbose)
+    services = CatService(get_client(ctx), verbose=verbose)
     data = services.cat_repositories()
     console.print(data)
 
@@ -782,9 +751,8 @@ def cat_get_segment_replication(
         sortBy (Annotated[ str, typer.Option, optional): _description_. Defaults to "Sort segments by field_name"), ]="".
         sortMethod (Annotated[ str, typer.Option, optional): _description_. Defaults to "Order by DESC or ASC"), ]="desc".
     """
-    client = get_client(ctx)
     services = CatService(
-        client,
+        get_client(ctx),
         verbose=verbose,
         is_active=is_active,
         sortBy=sortBy,

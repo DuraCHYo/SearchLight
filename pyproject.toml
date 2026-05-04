@@ -12,6 +12,8 @@ dependencies = [
     "opensearch-py (==3.1.0)",
     "typer (==0.24.1)",
     "rich (>=14.3.3,<15.0.0)",
+    "confuse>=2.2.0",
+    "pathlib>=1.0.1",
 ]
 
 

@@ -1,0 +1,9 @@
+credentials:
+  user: 'admin'
+  password: 'myStrongPassword123!'
+connectionDetails:
+  host: localhost
+  port: 9200
+  use_ssl: True
+  disable_verify_ssl: True
+  disable_warn: True
