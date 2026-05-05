@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Annotated, Optional
 
 import typer
@@ -5,6 +6,7 @@ import urllib3
 from rich import print_json
 from rich.console import Console
 from rich.table import Table
+from yaml import safe_load
 
 from searchlight.services.cat import CatService
 from searchlight.services.ism_policies import (
@@ -35,24 +37,78 @@ nodes_app = typer.Typer(help="Control cluster nodes")
 @handle_errors
 def main(
     ctx: typer.Context,
-    host: str = typer.Option("localhost", envvar="OS_HOST"),
-    port: int = typer.Option(9200, envvar="OS_PORT"),
+    host: str = typer.Option("localhost", envvar="OS_HOST", help="OpenSearch host"),
+    port: int = typer.Option(9200, envvar="OS_PORT", help="OpenSearch port"),
     auth: str = typer.Option(None, envvar="OS_AUTH", help="Format: login:password"),
-    verify_ssl: bool = typer.Option(True, "--verify-ssl/--disable-verify-ssl"),
-    use_ssl: bool = typer.Option(True, "--use-ssl/--disable-use-ssl"),
-    ssl_show_warn: bool = typer.Option(True, "--show-warn/--disable-warn"),
+    verify_ssl: bool = typer.Option(
+        True,
+        "--verify-ssl/--disable-verify-ssl",
+        help="Enable/disable SSL verification",
+    ),
+    use_ssl: bool = typer.Option(
+        True, "--use-ssl/--disable-use-ssl", help="Enable/disable SSL"
+    ),
+    ssl_show_warn: bool = typer.Option(
+        True, "--show-warn/--disable-warn", help="Show/hide SSL warnings"
+    ),
+    config: Annotated[
+        Path | None, typer.Option("--config", "-c", help="Config file path")
+    ] = None,
 ):
     if not ssl_show_warn:
         urllib3.disable_warnings()
     if ctx.resilient_parsing:
         return
+
+    config_data = None
+    if config:
+        try:
+            with open(config, "r", encoding="utf-8") as f:
+                config_data = safe_load(f)
+        except Exception as e:
+            console.print(f"Error loading config file {config}: {e}", style="red")
+            config_data = None
+
+    final_host = host
+    final_port = port
+    final_auth = auth
+    final_verify_ssl = verify_ssl
+    final_use_ssl = use_ssl
+    final_ssl_show_warn = ssl_show_warn
+
+    if config_data:
+        conn_details = config_data.get("connectionDetails", {})
+        credentials = config_data.get("credentials", {})
+
+        if host == "localhost":
+            final_host = conn_details.get("host", host)
+
+        if port == 9200:
+            final_port = conn_details.get("port", port)
+
+        if auth is None:
+            user = credentials.get("user")
+            password = credentials.get("password")
+            if user and password:
+                final_auth = f"{user}:{password}"
+
+        if verify_ssl:
+            final_verify_ssl = not conn_details.get("disable_verify_ssl", True)
+
+        if use_ssl:
+            final_use_ssl = conn_details.get("use_ssl", use_ssl)
+
+        if ssl_show_warn:
+            final_ssl_show_warn = not conn_details.get("disable_warn", True)
+
     ctx.obj = {
-        "host": host,
-        "port": port,
-        "auth": auth,
-        "verify_ssl": verify_ssl,
-        "use_ssl": use_ssl,
-        "ssl_show_warn": ssl_show_warn,
+        "host": final_host,
+        "port": final_port,
+        "auth": final_auth,
+        "verify_ssl": final_verify_ssl,
+        "use_ssl": final_use_ssl,
+        "ssl_show_warn": final_ssl_show_warn,
+        "config": config_data,
     }
 
 
